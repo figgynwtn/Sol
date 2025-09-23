@@ -1,0 +1,397 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('../styles/solar-system.css');
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gradient-to-br from-space-950 via-purple-950 to-space-950 text-white overflow-hidden;
+    background-attachment: fixed;
+  }
+  
+  /* Animated starfield background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+      radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+      radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+      radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    /* No animation - static background */
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+@layer components {
+  /* Glassmorphism panels */
+  .glass-panel {
+    @apply bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
+  .glass-panel-hover {
+    @apply hover:bg-white/15 hover:border-white/20 hover:shadow-purple-500/20 transition-all duration-300;
+  }
+  
+  /* Touch-friendly improvements */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* Mobile-optimized slider styling */
+  .cosmic-slider {
+    @apply w-full appearance-none bg-transparent cursor-pointer;
+  }
+  
+  .cosmic-slider::-webkit-slider-track {
+    @apply h-2 sm:h-3 bg-purple-900/30 rounded-full appearance-none cursor-pointer;
+  }
+  
+  .cosmic-slider::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 sm:w-5 sm:h-5 bg-purple-400 rounded-full cursor-pointer transition-all duration-200 hover:bg-purple-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-400;
+    margin-top: -6px;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  }
+
+  @media (min-width: 640px) {
+    .cosmic-slider::-webkit-slider-thumb {
+      margin-top: -8px;
+    }
+  }
+  
+  .cosmic-slider::-moz-range-track {
+    @apply h-2 sm:h-3 bg-purple-900/30 rounded-full cursor-pointer border-none;
+  }
+  
+  .cosmic-slider::-moz-range-thumb {
+    @apply w-4 h-4 sm:w-5 sm:h-5 bg-purple-400 rounded-full cursor-pointer transition-all duration-200 hover:bg-purple-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-400 border-none;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  }
+  
+  /* Mobile-first button improvements */
+  .cosmic-button {
+    @apply px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900;
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+  
+  .cosmic-button:active {
+    @apply scale-95;
+  }
+  
+  .cosmic-button-danger {
+    @apply from-red-600 to-orange-600;
+  }
+  
+  .cosmic-button:disabled {
+    @apply opacity-50 cursor-not-allowed transform-none;
+  }
+  
+  /* Neon glow effects */
+  .neon-glow {
+    box-shadow: 
+      0 0 20px rgba(139, 92, 246, 0.5),
+      0 0 40px rgba(139, 92, 246, 0.3),
+      0 0 60px rgba(139, 92, 246, 0.1),
+      inset 0 0 20px rgba(139, 92, 246, 0.1);
+  }
+  
+  .neon-glow-blue {
+    box-shadow: 
+      0 0 20px rgba(59, 130, 246, 0.5),
+      0 0 40px rgba(59, 130, 246, 0.3),
+      0 0 60px rgba(59, 130, 246, 0.1),
+      inset 0 0 20px rgba(59, 130, 246, 0.1);
+  }
+  
+  .neon-glow-gold {
+    box-shadow: 
+      0 0 20px rgba(245, 158, 11, 0.5),
+      0 0 40px rgba(245, 158, 11, 0.3),
+      0 0 60px rgba(245, 158, 11, 0.1),
+      inset 0 0 20px rgba(245, 158, 11, 0.1);
+  }
+  
+  /* Planet effects */
+  .planet-glow {
+    filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 30px currentColor);
+    transition: all 0.3s ease;
+  }
+  
+  .planet-glow:hover {
+    filter: drop-shadow(0 0 25px currentColor) drop-shadow(0 0 50px currentColor);
+    transform: scale(1.1);
+  }
+  
+  /* Mobile-friendly planet touch targets */
+  .planet-touch-target {
+    @apply min-w-[44px] min-h-[44px] sm:min-w-[48px] sm:min-h-[48px] cursor-pointer touch-manipulation;
+  }
+  
+  .orbit-path {
+    stroke: rgba(139, 92, 246, 0.2);
+    stroke-width: 1;
+    fill: none;
+    stroke-dasharray: 5, 10;
+    animation: orbit-pulse 4s ease-in-out infinite;
+  }
+  
+  .sun-glow {
+    filter: drop-shadow(0 0 30px #fbbf24) drop-shadow(0 0 60px #f59e0b) drop-shadow(0 0 90px #d97706);
+    animation: sun-pulse 3s ease-in-out infinite;
+  }
+  
+  /* Typography hierarchy */
+  .cosmic-title {
+    @apply text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent;
+    text-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+  }
+  
+  .cosmic-subtitle {
+    @apply text-xl md:text-2xl font-semibold text-purple-300;
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+  
+  .cosmic-text {
+    @apply text-gray-200 leading-relaxed;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  }
+  
+  /* Custom buttons */
+  .cosmic-button {
+    @apply relative px-8 py-4 font-semibold text-lg transition-all duration-300 transform hover:scale-105;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(59, 130, 246, 0.8) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    box-shadow: 
+      0 8px 32px rgba(139, 92, 246, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  .cosmic-button:hover {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(59, 130, 246, 1) 100%);
+    box-shadow: 
+      0 12px 48px rgba(139, 92, 246, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  
+  .cosmic-button-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.8) 100%);
+    box-shadow: 
+      0 8px 32px rgba(239, 68, 68, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  .cosmic-button-danger:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 1) 0%, rgba(220, 38, 38, 1) 100%);
+    box-shadow: 
+      0 12px 48px rgba(239, 68, 68, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Custom range sliders */
+  .cosmic-slider {
+    @apply w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer;
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.3) 0%, rgba(59, 130, 246, 0.3) 100%);
+    outline: none;
+  }
+  
+  .cosmic-slider::-webkit-slider-thumb {
+    @apply appearance-none w-6 h-6 rounded-full cursor-pointer transition-all duration-300;
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  }
+  
+  .cosmic-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
+  }
+  
+  .cosmic-slider::-moz-range-thumb {
+    @apply w-6 h-6 rounded-full cursor-pointer transition-all duration-300;
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  }
+  
+  .cosmic-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
+  }
+  
+  /* Card layouts */
+  .cosmic-card {
+    @apply glass-panel p-6 transition-all duration-300;
+  }
+  
+  .cosmic-card:hover {
+    @apply glass-panel-hover transform hover:-translate-y-1;
+  }
+  
+  /* Loading animations */
+  .cosmic-loader {
+    @apply w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full;
+    animation: cosmic-spin 1s linear infinite;
+  }
+  
+  /* Responsive grid */
+  .cosmic-grid {
+    @apply grid grid-cols-1 lg:grid-cols-3 gap-6 p-6;
+  }
+  
+  /* Info badges */
+  .cosmic-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #e0e7ff;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+  }
+  
+  .backdrop-galaxy {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: linear-gradient(135deg, 
+      rgba(139, 92, 246, 0.1) 0%, 
+      rgba(59, 130, 246, 0.1) 50%, 
+      rgba(16, 185, 129, 0.1) 100%);
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+  
+  .animate-orbit {
+    animation: orbit var(--duration) linear infinite;
+  }
+  
+  /* Custom slider styling */
+  .cosmic-slider {
+    @apply w-full h-2 bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-lg appearance-none cursor-pointer;
+    background-image: linear-gradient(90deg, 
+      rgba(139, 92, 246, 0.3) 0%, 
+      rgba(59, 130, 246, 0.3) 50%, 
+      rgba(16, 185, 129, 0.3) 100%);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+  }
+  
+  .cosmic-slider::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 rounded-full cursor-pointer transition-all duration-300;
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 0 10px rgba(139, 92, 246, 0.5),
+      0 0 20px rgba(139, 92, 246, 0.3),
+      inset 0 0 5px rgba(255, 255, 255, 0.2);
+  }
+  
+  .cosmic-slider::-webkit-slider-thumb:hover {
+    @apply transform scale-125;
+    box-shadow: 
+      0 0 15px rgba(139, 92, 246, 0.8),
+      0 0 30px rgba(139, 92, 246, 0.5),
+      inset 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+  
+  .cosmic-slider::-moz-range-thumb {
+    @apply w-4 h-4 rounded-full cursor-pointer transition-all duration-300 border-none;
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 0 10px rgba(139, 92, 246, 0.5),
+      0 0 20px rgba(139, 92, 246, 0.3),
+      inset 0 0 5px rgba(255, 255, 255, 0.2);
+  }
+  
+  .cosmic-slider::-moz-range-thumb:hover {
+    @apply transform scale-125;
+    box-shadow: 
+      0 0 15px rgba(139, 92, 246, 0.8),
+      0 0 30px rgba(139, 92, 246, 0.5),
+      inset 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Danger button variant */
+  .cosmic-button-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.8) 100%);
+    box-shadow: 
+      0 8px 32px rgba(239, 68, 68, 0.3),
+      0 0 20px rgba(239, 68, 68, 0.2),
+      inset 0 0 20px rgba(239, 68, 68, 0.1);
+  }
+  
+  .cosmic-button-danger:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.9) 0%, rgba(220, 38, 38, 0.9) 100%);
+    box-shadow: 
+      0 12px 48px rgba(239, 68, 68, 0.4),
+      0 0 30px rgba(239, 68, 68, 0.3),
+      inset 0 0 25px rgba(239, 68, 68, 0.2);
+  }
+}
+
+/* Custom keyframe animations */
+@keyframes sparkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes sun-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes orbit-pulse {
+  0%, 100% { stroke-opacity: 0.2; }
+  50% { stroke-opacity: 0.4; }
+}
+
+@keyframes cosmic-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(var(--radius)) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(var(--radius)) rotate(-360deg); }
+}
