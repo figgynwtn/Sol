@@ -1,1 +1,26 @@
-{}
+{
+  "components/LoadingAnimation.tsx -> tone": {
+    "id": "components/LoadingAnimation.tsx -> tone",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_tone_build_Tone_js.js"
+    ]
+  },
+  "hooks/useAudioEngine.ts -> tone": {
+    "id": "hooks/useAudioEngine.ts -> tone",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_tone_build_Tone_js.js"
+    ]
+  },
+  "lib/audioEngine.ts -> tone": {
+    "id": "lib/audioEngine.ts -> tone",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_tone_build_Tone_js.js"
+    ]
+  },
+  "lib/audioEngine.ts -> tone/build/Tone": {
+    "id": "lib/audioEngine.ts -> tone/build/Tone",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_tone_build_Tone_js.js"
+    ]
+  }
+}

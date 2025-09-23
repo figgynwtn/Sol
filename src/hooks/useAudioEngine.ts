@@ -81,11 +81,30 @@ export function useAudioEngine(): UseAudioEngineReturn {
     };
   }, [speedMultiplier, isInitialized, audioSettings.isPlaying, audioEngine]);
 
-  // Handle audio play/pause (initialization is now handled by AudioInitializer)
+  // Handle audio play/pause with initialization if needed
   const handleTogglePlay = useCallback(async (): Promise<void> => {
     if (!isInitialized) {
-      console.warn('Audio not initialized - AudioInitializer should handle this');
-      return;
+      console.log('🎵 Audio not initialized - attempting to initialize now');
+      try {
+        // Import Tone.js dynamically
+        const toneModule = await import('tone');
+        const Tone = toneModule as any;
+        
+        // Try to start audio context
+        if (typeof Tone.start === 'function') {
+          await Tone.start();
+        }
+        
+        // Initialize audio engine
+        audioEngine.setToneReference(Tone);
+        await audioEngine.initialize();
+        
+        console.log('✅ Audio initialized successfully from main page');
+        // Note: isInitialized will be updated via the state change listener
+      } catch (error) {
+        console.error('❌ Failed to initialize audio from main page:', error);
+        return;
+      }
     }
     
     try {

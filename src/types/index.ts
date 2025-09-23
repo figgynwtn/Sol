@@ -3,6 +3,15 @@ import { Planet } from '@/data/planets';
 // Re-export Planet interface for convenience
 export type { Planet };
 
+export interface AudioSettings {
+  isPlaying: boolean;
+  volume: number;
+  tempo: number;
+  scale: string[];
+}
+
+export type AudioStatus = 'uninitialized' | 'initializing' | 'ready' | 'playing' | 'paused' | 'error';
+
 export interface PlanetPosition {
   x: number;
   y: number;
@@ -19,9 +28,14 @@ export interface SolarSystemVisualizationProps {
 }
 
 export interface ControlPanelProps {
+  audioSettings: AudioSettings;
   onTogglePlay: () => void;
+  onVolumeChange: (volume: number) => void;
+  onTempoChange: (tempo: number) => void;
   speedMultiplier: number;
   onSpeedChange: (speed: number) => void;
+  audioReady?: boolean;
+  audioStatus?: AudioStatus;
 }
 
 export interface PlanetInfoPanelProps {
@@ -30,9 +44,14 @@ export interface PlanetInfoPanelProps {
 }
 
 export interface MobileControlPanelProps {
+  audioSettings: AudioSettings;
   onTogglePlay: () => void;
+  onVolumeChange: (value: number) => void;
+  onTempoChange: (value: number) => void;
   speedMultiplier: number;
   onSpeedChange: (value: number) => void;
+  audioReady: boolean;
+  audioStatus: AudioStatus;
   planets: Planet[];
   onPlanetMute: (planetId: string, muted: boolean) => void;
 }

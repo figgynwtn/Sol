@@ -21,13 +21,14 @@ export default function AudioInitializer({
 }: AudioInitializerProps) {
   const [audioStatus, setAudioStatus] = useState<AudioStatus>('uninitialized');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [showButton, setShowButton] = useState(true);
+  const [showButton, setShowButton] = useState(false); // Start with button hidden
+  const [autoInitAttempted, setAutoInitAttempted] = useState(false);
 
   const audioEngine = getAudioEngine();
 
   useEffect(() => {
-    // Check if audio context is already available
-    checkAudioContext();
+    // Attempt automatic initialization in the background
+    attemptAutoInitialization();
   }, []);
 
   useEffect(() => {
@@ -262,6 +263,24 @@ export default function AudioInitializer({
       setErrorMessage(error instanceof Error ? error.message : 'Unknown error');
       
       // Show the button again for retry
+      setShowButton(true);
+    }
+  };
+
+  const attemptAutoInitialization = async () => {
+    if (autoInitAttempted) return;
+    
+    setAutoInitAttempted(true);
+    console.log('🎵 Attempting automatic audio initialization in the background...');
+    
+    try {
+      // Try to initialize audio without user interaction
+      // This will work in some browsers if the user has previously interacted with the site
+      await initializeAudio();
+      console.log('✅ Automatic audio initialization successful!');
+    } catch (error) {
+      console.log('⚠️ Automatic audio initialization failed, user interaction required:', error);
+      // Show the button for manual initialization
       setShowButton(true);
     }
   };
