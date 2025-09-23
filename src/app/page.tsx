@@ -5,13 +5,10 @@ import SolarSystemVisualization from '@/components/SolarSystemVisualization';
 import ControlPanel from '@/components/ControlPanel';
 import PlanetInfoPanel from '@/components/PlanetInfoPanel';
 import LoadingAnimation from '@/components/LoadingAnimation';
-import AudioDebugPanel from '@/components/AudioDebugPanel';
-import AudioInitializer, { AudioStatus } from '@/components/AudioInitializer';
 import SlideUpDrawer from '@/components/SlideUpDrawer';
 import MobileControlPanel from '@/components/MobileControlPanel';
 import MobilePlanetInfoPanel from '@/components/MobilePlanetInfoPanel';
 import { Planet } from '@/data/planets';
-import { useAudioEngine } from '@/hooks/useAudioEngine';
 import { useGestures, useIsMobile, useOrientation } from '@/hooks/useGestures';
 import { PLANETS } from '@/lib/planets-data';
 import { cn } from '@/lib/utils';
@@ -19,44 +16,37 @@ import { cn } from '@/lib/utils';
 export default function HomePage() {
   const [selectedPlanet, setSelectedPlanet] = useState<Planet | null>(null);
   const [showLoading, setShowLoading] = useState(true);
-  const [showDebugPanel, setShowDebugPanel] = useState(false);
-  const [audioStatus, setAudioStatus] = useState<AudioStatus>('uninitialized');
-  const [audioReady, setAudioReady] = useState(false);
   const [showMobileControls, setShowMobileControls] = useState(false);
   const [showPlanetInfo, setShowPlanetInfo] = useState(false);
   const [visualizationScale, setVisualizationScale] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speedMultiplier, setSpeedMultiplier] = useState(1);
   
   const isMobile = useIsMobile();
   const orientation = useOrientation();
-  
-  const {
-    audioSettings,
-    speedMultiplier,
-    isInitialized,
-    handleTogglePlay,
-    handleVolumeChange,
-    handleTempoChange,
-    handleSpeedChange,
-    handlePlanetMute
-  } = useAudioEngine();
-
-  // Handle audio ready callback
-  const handleAudioReady = () => {
-    console.log('🎵 Audio is ready - enabling controls');
-    setAudioReady(true);
-    setShowLoading(false);
-  };
-
-  // Handle audio state changes
-  const handleAudioStateChange = (status: AudioStatus) => {
-    console.log('🔊 Audio status changed:', status);
-    setAudioStatus(status);
-  };
 
   // Handle loading completion
   const handleLoadingComplete = () => {
-    // Loading completion is handled by audio readiness
     console.log('📊 Loading animation completed');
+    setShowLoading(false);
+  };
+
+  // Handle play/pause toggle
+  const handleTogglePlay = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  // Handle speed change
+  const handleSpeedChange = (newSpeed: number) => {
+    setSpeedMultiplier(newSpeed);
+  };
+
+  // Handle planet mute toggle
+  const handlePlanetMute = (planetId: string, muted: boolean) => {
+    const planet = PLANETS.find(p => p.id === planetId);
+    if (planet) {
+      planet.isMuted = muted;
+    }
   };
 
   // Handle planet selection - show mobile panel on mobile, desktop panel on desktop
@@ -123,17 +113,13 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Show loading animation while audio initializes */}
+      {/* Show loading animation on page load */}
       {showLoading && (
         <LoadingAnimation onComplete={handleLoadingComplete} />
       )}
       
-      <AudioInitializer 
-        onAudioReady={handleAudioReady}
-        onAudioStateChange={handleAudioStateChange}
-      >
-        {/* Only show main content when loading is complete */}
-        {!showLoading && (
+      {/* Only show main content when loading is complete */}
+      {!showLoading && (
           <div className="min-h-screen bg-gradient-to-br from-space-950 via-purple-950 to-space-950 overflow-hidden relative flex flex-col">
             {/* Animated starfield background */}
             <div className="fixed inset-0 z-0">
@@ -173,17 +159,9 @@ export default function HomePage() {
                     <p className="text-gray-400 text-xs mt-1">Experience the cosmos through sound</p>
                     <div className="mt-2 flex flex-wrap items-center justify-start sm:justify-end gap-2">
                       <span className={`text-xs px-2 py-1 rounded-full ${
-                        audioStatus === 'ready' ? 'bg-green-900 text-green-300' :
-                        audioStatus === 'playing' ? 'bg-purple-900 text-purple-300' :
-                        audioStatus === 'paused' ? 'bg-yellow-900 text-yellow-300' :
-                        audioStatus === 'error' ? 'bg-red-900 text-red-300' :
-                        'bg-gray-800 text-gray-400'
+                        isPlaying ? 'bg-purple-900 text-purple-300' : 'bg-gray-800 text-gray-400'
                       }`}>
-                        {audioStatus === 'ready' ? '🔊 Ready' :
-                         audioStatus === 'playing' ? '🎵 Playing' :
-                         audioStatus === 'paused' ? '⏸️ Paused' :
-                         audioStatus === 'error' ? '❌ Error' :
-                         '🔇 Initializing...'}
+                        {isPlaying ? '🎵 Playing' : '⏸️ Paused'}
                       </span>
                     </div>
                   </div>
@@ -249,14 +227,9 @@ export default function HomePage() {
                   <div className="container mx-auto px-4">
                     <div className="glass-panel cosmic-card p-6 max-w-4xl">
                       <ControlPanel
-                        audioSettings={audioSettings}
                         onTogglePlay={handleTogglePlay}
-                        onVolumeChange={handleVolumeChange}
-                        onTempoChange={handleTempoChange}
                         speedMultiplier={speedMultiplier}
                         onSpeedChange={handleSpeedChange}
-                        audioReady={audioReady}
-                        audioStatus={audioStatus}
                       />
                     </div>
                   </div>
@@ -284,7 +257,7 @@ export default function HomePage() {
                       onPlanetClick={handlePlanetClick}
                       selectedPlanet={selectedPlanet}
                       speedMultiplier={speedMultiplier}
-                      isPlaying={audioSettings.isPlaying}
+                      isPlaying={isPlaying}
                     />
                   </div>
                 </div>
@@ -312,14 +285,9 @@ export default function HomePage() {
               maxHeight="70vh"
             >
               <MobileControlPanel
-                audioSettings={audioSettings}
                 onTogglePlay={handleTogglePlay}
-                onVolumeChange={handleVolumeChange}
-                onTempoChange={handleTempoChange}
                 speedMultiplier={speedMultiplier}
                 onSpeedChange={handleSpeedChange}
-                audioReady={audioReady}
-                audioStatus={audioStatus}
                 planets={PLANETS}
                 onPlanetMute={handlePlanetMute}
               />
@@ -340,24 +308,10 @@ export default function HomePage() {
                 Orbital data based on NASA planetary fact sheets • 
                 Click planets to explore, adjust controls to customize your experience
               </p>
-              <div className="mt-2">
-                <button
-                  onClick={() => setShowDebugPanel(true)}
-                  className="text-purple-400 hover:text-purple-300 text-xs underline"
-                >
-                  🔍 Audio Debug Panel
-                </button>
-              </div>
             </footer>
 
-            {/* Audio Debug Panel */}
-            <AudioDebugPanel
-              isVisible={showDebugPanel}
-              onClose={() => setShowDebugPanel(false)}
-            />
           </div>
         )}
-      </AudioInitializer>
     </>
   );
 }

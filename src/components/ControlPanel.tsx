@@ -2,24 +2,18 @@
 
 import React from 'react';
 import Tooltip from './Tooltip';
-import { AudioSettings } from '@/types';
 import { ControlPanelProps } from '@/types';
 
 export default function ControlPanel({
-  audioSettings,
   onTogglePlay,
-  onVolumeChange,
-  onTempoChange,
   speedMultiplier,
-  onSpeedChange,
-  audioReady = false,
-  audioStatus = 'uninitialized'
+  onSpeedChange
 }: ControlPanelProps) {
   return (
     <div 
       className="glass-panel p-3 sm:p-4 md:p-6 w-full max-w-xs sm:max-w-sm md:max-w-md lg:w-80 neon-glow"
       role="region"
-      aria-label="Audio control panel"
+      aria-label="Control panel"
       tabIndex={0}
     >
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
@@ -35,180 +29,32 @@ export default function ControlPanel({
         {/* Play/Pause Button */}
         <div className="flex items-center justify-center">
           <Tooltip 
-            content={!audioReady 
-              ? "Audio not initialized - click the 'Initialize Audio' button first"
-              : audioSettings.isPlaying 
-                ? "Pause the celestial symphony and stop all planetary audio" 
-                : "Start the celestial symphony and begin planetary audio generation"
-            }
+            content="Start or pause the solar system animation"
             position="top"
           >
             <button
               onClick={onTogglePlay}
-              disabled={!audioReady}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  if (audioReady) {
-                    onTogglePlay();
-                  }
+                  onTogglePlay();
                 }
               }}
               className={`
                 cosmic-button text-sm sm:text-base w-full py-3 sm:py-4
-                ${audioSettings.isPlaying ? 'cosmic-button-danger' : ''}
-                ${!audioReady ? 'opacity-50 cursor-not-allowed' : ''}
                 flex items-center justify-center gap-2 sm:gap-3
                 min-h-[44px] sm:min-h-[48px] touch-manipulation
               `}
-              aria-label={!audioReady ? "Audio not initialized" : audioSettings.isPlaying ? "Pause audio" : "Play audio"}
+              aria-label="Toggle animation"
             >
-              {!audioReady ? (
-                <>
-                  <span className="text-lg">🔇</span>
-                  <span>Audio Not Ready</span>
-                </>
-              ) : audioSettings.isPlaying ? (
-                <>
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 flex gap-1">
-                    <div className="w-1 h-4 sm:w-1.5 sm:h-5 bg-white rounded-sm animate-pulse"></div>
-                    <div className="w-1 h-4 sm:w-1.5 sm:h-5 bg-white rounded-sm animate-pulse"></div>
-                  </div>
-                  <span className="text-xs sm:text-sm">Pause</span>
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-xs sm:text-sm">Start</span>
-                </>
-              )}
+              <>
+                <div className="w-4 h-4 sm:w-5 sm:h-5 flex gap-1">
+                  <div className="w-1 h-4 sm:w-1.5 sm:h-5 bg-white rounded-sm animate-pulse"></div>
+                  <div className="w-1 h-4 sm:w-1.5 sm:h-5 bg-white rounded-sm animate-pulse"></div>
+                </div>
+                <span className="text-xs sm:text-sm">Toggle</span>
+              </>
             </button>
-          </Tooltip>
-        </div>
-
-        {/* Volume Control */}
-        <div className="space-y-2 sm:space-y-3" role="group" aria-label="Volume controls">
-          <div className="flex items-center justify-between">
-            <Tooltip 
-              content={!audioReady ? "Audio not initialized" : "Adjust the master volume of the celestial symphony (0-100%)"}
-              position="top"
-            >
-              <label 
-                htmlFor="volume-slider"
-                className="text-xs sm:text-sm font-medium text-purple-300 flex items-center gap-1 sm:gap-2 cursor-help touch-manipulation"
-              >
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072M12 6a9 9 0 100 12 9 9 0 000-12zm0 0V3m0 18v-3" />
-                </svg>
-                <span className="hidden sm:inline">Volume</span>
-                <span className="sm:hidden">Vol</span>
-              </label>
-            </Tooltip>
-            <span 
-              className="cosmic-badge text-xs" 
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {Math.round(audioSettings.volume * 100)}%
-            </span>
-          </div>
-          <Tooltip 
-            content={!audioReady ? "Audio not initialized" : `Current volume: ${Math.round(audioSettings.volume * 100)}%`}
-            position="bottom"
-          >
-            <input
-              id="volume-slider"
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={audioSettings.volume}
-              onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
-              disabled={!audioReady}
-              onKeyDown={(e) => {
-                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                  e.preventDefault();
-                  const step = e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -0.01 : 0.01;
-                  const newValue = Math.max(0, Math.min(1, audioSettings.volume + step));
-                  onVolumeChange(newValue);
-                }
-              }}
-              className="cosmic-slider h-2 sm:h-3 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900 touch-manipulation"
-              aria-label={!audioReady ? "Volume control disabled" : "Master volume control"}
-              aria-valuemin={0}
-              aria-valuemax={1}
-              aria-valuenow={audioSettings.volume}
-              aria-valuetext={!audioReady ? "Volume control disabled" : `${Math.round(audioSettings.volume * 100)}%`}
-              tabIndex={0}
-              style={{
-                WebkitAppearance: 'none',
-                appearance: 'none'
-              }}
-            />
-          </Tooltip>
-        </div>
-
-        {/* Tempo Control */}
-        <div className="space-y-2 sm:space-y-3" role="group" aria-label="Tempo controls">
-          <div className="flex items-center justify-between">
-            <Tooltip 
-              content={!audioReady ? "Audio not initialized" : "Control the tempo (beats per minute) of the planetary music"}
-              position="top"
-            >
-              <label 
-                htmlFor="tempo-slider"
-                className="text-xs sm:text-sm font-medium text-purple-300 flex items-center gap-1 sm:gap-2 cursor-help touch-manipulation"
-              >
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                <span className="hidden sm:inline">Tempo</span>
-                <span className="sm:hidden">BPM</span>
-              </label>
-            </Tooltip>
-            <span 
-              className="cosmic-badge text-xs" 
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {audioSettings.tempo}
-            </span>
-          </div>
-          <Tooltip 
-            content={!audioReady ? "Audio not initialized" : `Current tempo: ${audioSettings.tempo} beats per minute`}
-            position="bottom"
-          >
-            <input
-              id="tempo-slider"
-              type="range"
-              min="60"
-              max="180"
-              step="5"
-              value={audioSettings.tempo}
-              onChange={(e) => onTempoChange(parseInt(e.target.value))}
-              disabled={!audioReady}
-              onKeyDown={(e) => {
-                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                  e.preventDefault();
-                  const step = e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -5 : 5;
-                  const newValue = Math.max(60, Math.min(180, audioSettings.tempo + step));
-                  onTempoChange(newValue);
-                }
-              }}
-              className="cosmic-slider h-2 sm:h-3 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900 touch-manipulation"
-              aria-label="Tempo control"
-              aria-valuemin={60}
-              aria-valuemax={180}
-              aria-valuenow={audioSettings.tempo}
-              aria-valuetext={`${audioSettings.tempo} beats per minute`}
-              tabIndex={0}
-              style={{
-                WebkitAppearance: 'none',
-                appearance: 'none'
-              }}
-            />
           </Tooltip>
         </div>
 
@@ -274,10 +120,6 @@ export default function ControlPanel({
 
         {/* Info */}
         <div className="cosmic-card p-3 sm:p-4 space-y-2" role="complementary" aria-label="Application information">
-          <div className="flex items-start gap-1 sm:gap-2">
-            <span className="text-purple-400 text-xs sm:text-sm" aria-hidden="true">🎵</span>
-            <p className="text-xs cosmic-text">Planets generate music based on orbital characteristics</p>
-          </div>
           <div className="flex items-start gap-1 sm:gap-2">
             <span className="text-blue-400 text-xs sm:text-sm" aria-hidden="true">🪐</span>
             <p className="text-xs cosmic-text">Click planets to learn more</p>

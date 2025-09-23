@@ -387,10 +387,6 @@ export default function SolarSystemVisualization({
     });
   }, [planetPositions]);
 
-  // DEBUG: Log isPlaying changes
-  useEffect(() => {
-    console.log('🔍 DEBUG: isPlaying changed', { isPlaying });
-  }, [isPlaying]);
 
   return (
     <div className="w-full h-full">
@@ -404,9 +400,6 @@ export default function SolarSystemVisualization({
           border: '1px solid #333'
         }}
       />
-      <div className="text-white text-sm p-2">
-        DEBUG: isPlaying = {isPlaying ? 'true' : 'false'}
-      </div>
     </div>
   );
 }
