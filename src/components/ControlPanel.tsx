@@ -19,10 +19,15 @@ export default function ControlPanel({
 }: ControlPanelProps) {
   return (
     <div 
-      className="glass-panel p-3 sm:p-4 md:p-6 w-full max-w-xs sm:max-w-sm md:max-w-md lg:w-80 neon-glow"
+      className="w-full h-full glass-panel p-4 sm:p-6"
       role="region"
       aria-label="Control panel"
       tabIndex={0}
+      style={{
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)'
+      }}
     >
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
         <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
@@ -33,7 +38,7 @@ export default function ControlPanel({
         <h2 className="cosmic-subtitle text-sm sm:text-base md:text-lg">Mission Control</h2>
       </div>
       
-      <div className="space-y-3 sm:space-y-4 md:space-y-6">
+      <div className="space-y-4 sm:space-y-5 md:space-y-6 overflow-visible">
         {/* Play/Pause Button */}
         <div className="flex items-center justify-center">
           <Tooltip 
@@ -99,11 +104,11 @@ export default function ControlPanel({
         )}
 
         {/* Volume Control */}
-        <div className="space-y-2 sm:space-y-3" role="group" aria-label="Volume controls">
-          <div className="flex items-center justify-between">
+        <div className="space-y-3 sm:space-y-3 w-full" role="group" aria-label="Volume controls">
+          <div className="flex items-center justify-between mb-2 w-full">
             <Tooltip 
-              content={!audioReady ? "Audio not initialized" : "Adjust the master volume of the celestial symphony (0-100%)"}
-              position="top"
+              content="Adjust master volume for all audio"
+              position="bottom"
             >
               <label 
                 htmlFor="volume-slider"
@@ -124,10 +129,7 @@ export default function ControlPanel({
               {Math.round(audioSettings.volume * 100)}%
             </span>
           </div>
-          <Tooltip 
-            content={!audioReady ? "Audio not initialized" : `Current volume: ${Math.round(audioSettings.volume * 100)}%`}
-            position="bottom"
-          >
+          <div className="w-full">
             <input
               id="volume-slider"
               type="range"
@@ -145,24 +147,20 @@ export default function ControlPanel({
                   onVolumeChange(newValue);
                 }
               }}
-              className="cosmic-slider h-2 sm:h-3 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900 touch-manipulation"
+              className="cosmic-slider w-full"
               aria-label={!audioReady ? "Volume control disabled" : "Master volume control"}
               aria-valuemin={0}
               aria-valuemax={1}
               aria-valuenow={audioSettings.volume}
               aria-valuetext={!audioReady ? "Volume control disabled" : `${Math.round(audioSettings.volume * 100)}%`}
               tabIndex={0}
-              style={{
-                WebkitAppearance: 'none',
-                appearance: 'none'
-              }}
             />
-          </Tooltip>
+          </div>
         </div>
 
         {/* Tempo Control */}
-        <div className="space-y-2 sm:space-y-3" role="group" aria-label="Tempo controls">
-          <div className="flex items-center justify-between">
+        <div className="space-y-3 sm:space-y-3 w-full overflow-visible" role="group" aria-label="Tempo controls">
+          <div className="flex items-center justify-between mb-2 w-full">
             <Tooltip 
               content={!audioReady ? "Audio not initialized" : "Control the tempo (beats per minute) of the planetary music"}
               position="top"
@@ -186,10 +184,7 @@ export default function ControlPanel({
               {audioSettings.tempo}
             </span>
           </div>
-          <Tooltip 
-            content={!audioReady ? "Audio not initialized" : `Current tempo: ${audioSettings.tempo} beats per minute`}
-            position="bottom"
-          >
+          <div className="w-full">
             <input
               id="tempo-slider"
               type="range"
@@ -207,23 +202,19 @@ export default function ControlPanel({
                   onTempoChange(newValue);
                 }
               }}
-              className="cosmic-slider h-2 sm:h-3 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900 touch-manipulation"
+              className="cosmic-slider w-full"
               aria-label="Tempo control"
               aria-valuemin={60}
               aria-valuemax={180}
               aria-valuenow={audioSettings.tempo}
               aria-valuetext={`${audioSettings.tempo} beats per minute`}
               tabIndex={0}
-              style={{
-                WebkitAppearance: 'none',
-                appearance: 'none'
-              }}
             />
-          </Tooltip>
+          </div>
         </div>
 
         {/* Speed Multiplier */}
-        <div className="space-y-2 sm:space-y-3" role="group" aria-label="Time speed multiplier controls">
+        <div className="space-y-3 sm:space-y-3" role="group" aria-label="Time speed multiplier controls">
           <div className="flex items-center justify-between">
             <Tooltip 
               content="Adjust the time speed multiplier to see planets orbit faster or slower"
@@ -245,7 +236,7 @@ export default function ControlPanel({
               {speedMultiplier}x
             </span>
           </div>
-          <div className="grid grid-cols-5 gap-1 sm:gap-2" role="radiogroup" aria-label="Time speed options">
+          <div className="grid grid-cols-5 gap-2 sm:gap-3" role="radiogroup" aria-label="Time speed options">
             {[1, 10, 100, 1000, 10000].map((speed) => (
               <Tooltip 
                 key={speed}
@@ -261,11 +252,11 @@ export default function ControlPanel({
                     }
                   }}
                   className={`
-                    py-2 sm:py-3 px-2 sm:px-3 rounded text-xs sm:text-sm font-medium transition-all duration-200 transform hover:scale-105 touch-manipulation
+                    py-3 sm:py-3 px-2 sm:px-3 rounded text-xs sm:text-sm font-medium transition-all duration-200 transform hover:scale-105 touch-manipulation
                     focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900
-                    min-h-[36px] sm:min-h-[40px]
+                    min-h-[44px] sm:min-h-[44px]
                     ${speedMultiplier === speed
-                      ? 'cosmic-button text-xs px-1 py-1 sm:text-sm sm:px-2 sm:py-1'
+                      ? 'cosmic-button text-xs px-2 py-2 sm:text-sm sm:px-3 sm:py-2'
                       : 'glass-panel hover:glass-panel-hover text-purple-300'
                     }
                   `}

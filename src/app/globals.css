@@ -10,7 +10,7 @@
   }
   
   body {
-    @apply bg-gradient-to-br from-space-950 via-purple-950 to-space-950 text-white overflow-hidden;
+    @apply bg-gradient-to-br from-space-950 via-purple-950 to-space-950 text-white overflow-auto;
     background-attachment: fixed;
   }
   
@@ -54,35 +54,133 @@
     touch-action: manipulation;
   }
   
-  /* Mobile-optimized slider styling */
+  /* Fresh cosmic slider implementation */
   .cosmic-slider {
-    @apply w-full appearance-none bg-transparent cursor-pointer;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 12px !important;
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) !important;
+    outline: none;
+    cursor: pointer;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 3px solid #8b5cf6 !important;
+    display: block;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  /* Ultra-specific selectors to force the styles */
+  #volume-slider {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 12px !important;
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) !important;
+    outline: none;
+    cursor: pointer;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 3px solid #8b5cf6 !important;
+    display: block;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+  
+  #tempo-slider {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 12px !important;
+    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) !important;
+    outline: none;
+    cursor: pointer;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 3px solid #8b5cf6 !important;
+    display: block;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+  
+  /* Target the parent div that wraps the slider - be more specific */
+  .slider-container:has(.cosmic-slider),
+  div:has(.cosmic-slider):not(.glass-panel) {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
   
   .cosmic-slider::-webkit-slider-track {
-    @apply h-2 sm:h-3 bg-purple-900/30 rounded-full appearance-none cursor-pointer;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 4px !important;
+    background: #8b5cf6 !important;
+    border-radius: 4px !important;
+    border: 1px solid #8b5cf6 !important;
+    box-sizing: border-box !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    position: relative !important;
+    z-index: 1 !important;
   }
   
-  .cosmic-slider::-webkit-slider-thumb {
-    @apply appearance-none w-4 h-4 sm:w-5 sm:h-5 bg-purple-400 rounded-full cursor-pointer transition-all duration-200 hover:bg-purple-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-400;
-    margin-top: -6px;
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  .cosmic-slider:not(:focus)::-webkit-slider-track {
+    background: #8b5cf6 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    border: 1px solid #8b5cf6 !important;
   }
-
-  @media (min-width: 640px) {
-    .cosmic-slider::-webkit-slider-thumb {
-      margin-top: -8px;
-    }
+  
+  .cosmic-slider:focus::-webkit-slider-track {
+    background: #8b5cf6 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    border: 1px solid #8b5cf6 !important;
   }
+  
   
   .cosmic-slider::-moz-range-track {
-    @apply h-2 sm:h-3 bg-purple-900/30 rounded-full cursor-pointer border-none;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 4px !important;
+    background: #8b5cf6 !important;
+    border-radius: 4px !important;
+    border: 1px solid #8b5cf6 !important;
+    box-sizing: border-box !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    position: relative !important;
+    z-index: 1 !important;
   }
   
-  .cosmic-slider::-moz-range-thumb {
-    @apply w-4 h-4 sm:w-5 sm:h-5 bg-purple-400 rounded-full cursor-pointer transition-all duration-200 hover:bg-purple-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-400 border-none;
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  .cosmic-slider:not(:focus)::-moz-range-track {
+    background: #8b5cf6 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    border: 1px solid #8b5cf6 !important;
   }
+  
+  .cosmic-slider:focus::-moz-range-track {
+    background: #8b5cf6 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    border: 1px solid #8b5cf6 !important;
+  }
+  
+  
   
   /* Mobile-first button improvements */
   .cosmic-button {
@@ -96,9 +194,6 @@
     @apply scale-95;
   }
   
-  .cosmic-button-danger {
-    @apply from-red-600 to-orange-600;
-  }
   
   .cosmic-button:disabled {
     @apply opacity-50 cursor-not-allowed transform-none;
@@ -206,36 +301,6 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
   
-  /* Custom range sliders */
-  .cosmic-slider {
-    @apply w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer;
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.3) 0%, rgba(59, 130, 246, 0.3) 100%);
-    outline: none;
-  }
-  
-  .cosmic-slider::-webkit-slider-thumb {
-    @apply appearance-none w-6 h-6 rounded-full cursor-pointer transition-all duration-300;
-    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-  }
-  
-  .cosmic-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
-  }
-  
-  .cosmic-slider::-moz-range-thumb {
-    @apply w-6 h-6 rounded-full cursor-pointer transition-all duration-300;
-    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
-  }
-  
-  .cosmic-slider::-moz-range-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
-  }
   
   /* Card layouts */
   .cosmic-card {
@@ -264,6 +329,43 @@
     border: 1px solid rgba(139, 92, 246, 0.3);
     color: #e0e7ff;
   }
+}
+
+/* Custom range slider styling - enhance cosmic-slider class */
+.cosmic-slider::-webkit-slider-thumb {
+  width: 24px !important;
+  height: 24px !important;
+  margin-top: -8px !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5) !important;
+  transition: all 0.2s ease !important;
+}
+
+.cosmic-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.8) !important;
+}
+
+.cosmic-slider::-moz-range-thumb {
+  width: 24px !important;
+  height: 24px !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  border: none !important;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5) !important;
+  transition: all 0.2s ease !important;
+}
+
+.cosmic-slider::-moz-range-thumb:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.8) !important;
 }
 
 @layer utilities {
@@ -296,53 +398,6 @@
     animation: orbit var(--duration) linear infinite;
   }
   
-  /* Custom slider styling */
-  .cosmic-slider {
-    @apply w-full h-2 bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-lg appearance-none cursor-pointer;
-    background-image: linear-gradient(90deg, 
-      rgba(139, 92, 246, 0.3) 0%, 
-      rgba(59, 130, 246, 0.3) 50%, 
-      rgba(16, 185, 129, 0.3) 100%);
-    border: 1px solid rgba(139, 92, 246, 0.2);
-  }
-  
-  .cosmic-slider::-webkit-slider-thumb {
-    @apply appearance-none w-4 h-4 rounded-full cursor-pointer transition-all duration-300;
-    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 
-      0 0 10px rgba(139, 92, 246, 0.5),
-      0 0 20px rgba(139, 92, 246, 0.3),
-      inset 0 0 5px rgba(255, 255, 255, 0.2);
-  }
-  
-  .cosmic-slider::-webkit-slider-thumb:hover {
-    @apply transform scale-125;
-    box-shadow: 
-      0 0 15px rgba(139, 92, 246, 0.8),
-      0 0 30px rgba(139, 92, 246, 0.5),
-      inset 0 0 8px rgba(255, 255, 255, 0.3);
-  }
-  
-  .cosmic-slider::-moz-range-thumb {
-    @apply w-4 h-4 rounded-full cursor-pointer transition-all duration-300 border-none;
-    background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 
-      0 0 10px rgba(139, 92, 246, 0.5),
-      0 0 20px rgba(139, 92, 246, 0.3),
-      inset 0 0 5px rgba(255, 255, 255, 0.2);
-  }
-  
-  .cosmic-slider::-moz-range-thumb:hover {
-    @apply transform scale-125;
-    box-shadow: 
-      0 0 15px rgba(139, 92, 246, 0.8),
-      0 0 30px rgba(139, 92, 246, 0.5),
-      inset 0 0 8px rgba(255, 255, 255, 0.3);
-  }
-  
-  /* Danger button variant */
   .cosmic-button-danger {
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.8) 100%);
     box-shadow: 

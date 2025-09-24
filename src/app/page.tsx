@@ -6,8 +6,6 @@ import ControlPanel from '@/components/ControlPanel';
 import PlanetInfoPanel from '@/components/PlanetInfoPanel';
 import LoadingAnimation from '@/components/LoadingAnimation';
 import AudioDebugPanel from '@/components/AudioDebugPanel';
-import SlideUpDrawer from '@/components/SlideUpDrawer';
-import MobileControlPanel from '@/components/MobileControlPanel';
 import MobilePlanetInfoPanel from '@/components/MobilePlanetInfoPanel';
 import { Planet } from '@/data/planets';
 import { useAudioEngine } from '@/hooks/useAudioEngine';
@@ -22,7 +20,6 @@ export default function HomePage() {
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [audioStatus, setAudioStatus] = useState<AudioStatus>('uninitialized');
   const [audioReady, setAudioReady] = useState(false);
-  const [showMobileControls, setShowMobileControls] = useState(false);
   const [showPlanetInfo, setShowPlanetInfo] = useState(false);
   const [visualizationScale, setVisualizationScale] = useState(1);
   const [soundPreference, setSoundPreference] = useState<SoundPreference>(null);
@@ -123,9 +120,7 @@ export default function HomePage() {
     planet.isMuted = newMutedState;
     
     // Show appropriate info panel based on device
-    if (isMobile) {
-      setShowPlanetInfo(true);
-    }
+    setShowPlanetInfo(true);
   };
 
   // Close planet info panel
@@ -136,15 +131,11 @@ export default function HomePage() {
 
   // Gesture handlers
   const handleSwipeUp = () => {
-    if (isMobile) {
-      setShowMobileControls(true);
-    }
+    // Handle swipe up gesture
   };
 
   const handleSwipeDown = () => {
-    if (isMobile) {
-      setShowMobileControls(false);
-    }
+    // Handle swipe down gesture
   };
 
   const handleSwipeLeft = () => {
@@ -236,63 +227,68 @@ export default function HomePage() {
               </div>
             </header>
 
-            {/* Mobile Control Button - More prominent and accessible */}
-            {isMobile && (
-              <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30">
-                <button
-                  onClick={() => setShowMobileControls(!showMobileControls)}
-                  className="glass-panel p-4 px-6 rounded-full neon-glow hover:scale-105 transition-all duration-200 touch-manipulation shadow-xl border border-purple-500/30 flex items-center gap-3 min-w-[140px] justify-center"
-                  aria-label={showMobileControls ? "Hide Mission Control" : "Show Mission Control"}
-                >
-                  <svg 
-                    className="w-6 h-6 text-purple-300" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    {showMobileControls ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    )}
-                  </svg>
-                  <span className="text-sm font-medium text-purple-300">
-                    {showMobileControls ? 'Close' : 'Mission Control'}
-                  </span>
-                </button>
-              </div>
-            )}
 
-            {/* Gesture Hints - More visible and better positioned */}
-            {isMobile && !showMobileControls && (
-              <div className="fixed bottom-24 right-4 z-20 glass-panel p-4 rounded-2xl max-w-[220px] border border-purple-500/20">
-                <div className="text-xs text-purple-300 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">⬆️</span>
-                    <span>Swipe up for controls</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">⬅️➡️</span>
-                    <span>Swipe for speed</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🤏</span>
-                    <span>Pinch to zoom</span>
-                  </div>
-                </div>
-              </div>
-            )}
 
-            {/* Main Content - Fixed layout */}
+            {/* Main Content - Responsive layout */}
             <main className={cn(
               "relative flex-1 overflow-hidden",
-              "flex flex-col"
+              "p-4 md:p-6"
             )}>
-              {/* Desktop Control Panel - Fixed positioning and z-index */}
+              {/* Desktop Layout - Side by side */}
               {!isMobile && (
-                <div className="flex-shrink-0 mb-6 z-20">
-                  <div className="container mx-auto px-4">
-                    <div className="glass-panel cosmic-card p-6 max-w-4xl">
+                <div className="flex flex-row gap-6 h-full max-h-[calc(100vh-200px)]">
+                  {/* Mission Control - Left side (40%) */}
+                  <div className="w-[40%] flex-shrink-0 relative z-10 p-4 sm:p-6">
+                    <div className="max-w-6xl mx-auto">
+                      <ControlPanel
+                      audioSettings={audioSettings}
+                      onTogglePlay={handleTogglePlay}
+                      onVolumeChange={handleVolumeChange}
+                      onTempoChange={handleTempoChange}
+                      speedMultiplier={speedMultiplier}
+                      onSpeedChange={handleSpeedChange}
+                      audioReady={audioReady}
+                      audioStatus={audioStatus}
+                      soundPreference={soundPreference}
+                      onToggleSound={handleToggleSound}
+                    />
+                    </div>
+                  </div>
+                  
+                  {/* Planet Map - Right side (70%) */}
+                  <div className="flex-1 flex items-center justify-center relative z-10">
+                    <div className="w-full h-full flex items-center justify-center">
+                      <SolarSystemVisualization
+                        width={orientation === 'portrait' ? 700 : 900}
+                        height={orientation === 'portrait' ? 500 : 600}
+                        onPlanetClick={handlePlanetClick}
+                        selectedPlanet={selectedPlanet}
+                        speedMultiplier={speedMultiplier}
+                        isPlaying={audioSettings.isPlaying}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Desktop Planet Info Panel - Overlay on planet map */}
+                  {selectedPlanet && (
+                    <div className="absolute top-6 right-6 w-80 z-30">
+                      <div className="glass-panel cosmic-card p-4 h-full overflow-hidden">
+                        <PlanetInfoPanel
+                          planet={selectedPlanet}
+                          onClose={handleClosePlanetInfo}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Mobile Layout - Column */}
+              {isMobile && (
+                <div className="flex flex-col gap-6 h-full">
+                  {/* Mission Control - Top */}
+                  <div className="w-full">
+                    <div className="glass-panel p-4 sm:p-6 w-full">
                       <ControlPanel
                         audioSettings={audioSettings}
                         onTogglePlay={handleTogglePlay}
@@ -307,70 +303,25 @@ export default function HomePage() {
                       />
                     </div>
                   </div>
-                </div>
-              )}
-              
-              {/* Main Content Area - Fixed flex layout */}
-              <div className="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden">
-                {/* Visualization Area - Center with proper constraints */}
-                <div className={cn(
-                  "flex-1 flex items-center justify-center relative z-10 min-h-[60vh] lg:min-h-[70vh]",
-                  "overflow-hidden"
-                )}>
-                  <div className={cn(
-                    "w-full h-full flex items-center justify-center transition-transform duration-300",
-                    "container mx-auto px-4"
-                  )}>
-                    <SolarSystemVisualization
-                      width={isMobile 
-                        ? Math.min(window.innerWidth - 32, 600) 
-                        : orientation === 'portrait' ? 700 : 900}
-                      height={isMobile 
-                        ? Math.min(window.innerHeight - 280, 450) 
-                        : orientation === 'portrait' ? 500 : 600}
-                      onPlanetClick={handlePlanetClick}
-                      selectedPlanet={selectedPlanet}
-                      speedMultiplier={speedMultiplier}
-                      isPlaying={audioSettings.isPlaying}
-                    />
-                  </div>
-                </div>
-                
-                {/* Desktop Planet Info Panel - Fixed positioning */}
-                {!isMobile && selectedPlanet && (
-                  <div className="lg:w-96 flex-shrink-0 z-20">
-                    <div className="glass-panel cosmic-card p-4 h-full overflow-hidden">
-                      <PlanetInfoPanel
-                        planet={selectedPlanet}
-                        onClose={handleClosePlanetInfo}
+                  
+                  {/* Planet Map - Bottom */}
+                  <div className="flex-1 flex items-center justify-center relative z-10 min-h-[400px]">
+                    <div className="w-full h-full flex items-center justify-center">
+                      <SolarSystemVisualization
+                        width={Math.min(window.innerWidth - 32, 600)}
+                        height={Math.min(window.innerHeight - 400, 450)}
+                        onPlanetClick={handlePlanetClick}
+                        selectedPlanet={selectedPlanet}
+                        speedMultiplier={speedMultiplier}
+                        isPlaying={audioSettings.isPlaying}
                       />
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </main>
 
 
-            {/* Mobile Slide-up Control Panel */}
-            <SlideUpDrawer
-              isOpen={showMobileControls}
-              onClose={() => setShowMobileControls(false)}
-              title="Mission Control"
-              maxHeight="70vh"
-            >
-              <MobileControlPanel
-                audioSettings={audioSettings}
-                onTogglePlay={handleTogglePlay}
-                onVolumeChange={handleVolumeChange}
-                onTempoChange={handleTempoChange}
-                speedMultiplier={speedMultiplier}
-                onSpeedChange={handleSpeedChange}
-                audioReady={audioReady}
-                audioStatus={audioStatus}
-                planets={PLANETS}
-                onPlanetMute={handlePlanetMute}
-              />
-            </SlideUpDrawer>
 
             {/* Mobile Planet Info Panel */}
             {showPlanetInfo && selectedPlanet && (
@@ -391,6 +342,6 @@ export default function HomePage() {
 
           </div>
         )}
-    </>
-  );
+      </>
+    );
 }
