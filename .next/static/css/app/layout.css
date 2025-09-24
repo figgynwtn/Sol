@@ -352,20 +352,7 @@
   animation: slider-glow 2s ease-in-out infinite;
 }
 
-.cosmic-slider::-webkit-slider-thumb {
-  -webkit-transition: all 0.2s ease;
-  transition: all 0.2s ease;
-}
-
-.cosmic-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 15px rgba(147, 51, 234, 0.6);
-}
-
-.cosmic-slider::-webkit-slider-thumb:active {
-  transform: scale(1.1);
-  box-shadow: 0 0 25px rgba(147, 51, 234, 0.8);
-}
+/* Slider thumb styles moved to globals.css for consistent centering */
 
 /* Tooltip animations */
 .tooltip {
@@ -1710,11 +1697,6 @@ video {
 .resize {
   resize: both;
 }
-.appearance-none {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-}
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
@@ -2397,10 +2379,13 @@ video {
   }
 
 /* Custom range slider styling - enhance cosmic-slider class */
-.cosmic-slider::-webkit-slider-thumb {
+/* Ultra-specific selector to override solar-system.css conflicts */
+.cosmic-slider::-webkit-slider-thumb,
+input.cosmic-slider::-webkit-slider-thumb {
   width: 24px !important;
   height: 24px !important;
-  margin-top: -8px !important;
+  margin-top: 0 !important;
+  transform: translateY(1px) !important;
   background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) !important;
   border: 2px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 50% !important;
@@ -2413,13 +2398,15 @@ video {
 }
 
 .cosmic-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.1) !important;
+  transform: translateY(1px) scale(1.1) !important;
   box-shadow: 0 0 15px rgba(139, 92, 246, 0.8) !important;
 }
 
 .cosmic-slider::-moz-range-thumb {
   width: 24px !important;
   height: 24px !important;
+  margin-top: 0 !important;
+  transform: translateY(1px) !important;
   background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%) !important;
   border: 2px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 50% !important;
@@ -2431,7 +2418,7 @@ video {
 }
 
 .cosmic-slider::-moz-range-thumb:hover {
-  transform: scale(1.1) !important;
+  transform: translateY(1px) scale(1.1) !important;
   box-shadow: 0 0 15px rgba(139, 92, 246, 0.8) !important;
 }
 

@@ -68,11 +68,7 @@ export default function MobileControlPanel({
           step={step}
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value))}
-          className="w-full h-12 bg-purple-900/30 rounded-lg appearance-none cursor-pointer touch-manipulation"
-          style={{
-            WebkitAppearance: 'none',
-            background: `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${(value - min) / (max - min) * 100}%, #374151 ${(value - min) / (max - min) * 100}%, #374151 100%)`
-          }}
+          className="cosmic-slider w-full touch-manipulation"
         />
         <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
           <span className="text-xs text-gray-500">{min}{unit}</span>
