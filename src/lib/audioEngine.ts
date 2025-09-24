@@ -30,6 +30,7 @@ export interface AudioState {
   hasError: boolean;
   error: AudioError | null;
   contextState: 'closed' | 'running' | 'suspended' | 'unknown';
+  isGloballyMuted: boolean;
 }
 
 export class CelestialAudioEngine {
@@ -49,6 +50,7 @@ export class CelestialAudioEngine {
   private timeMultiplier: number;
   private audioState: AudioState;
   private errorCallbacks: Set<(error: AudioError) => void>;
+  private isGloballyMuted: boolean;
   
   // Tone.js constructor references
   private VolumeConstructor: any;
@@ -90,8 +92,12 @@ export class CelestialAudioEngine {
       isPlaying: false,
       hasError: false,
       error: null,
-      contextState: 'unknown'
+      contextState: 'unknown',
+      isGloballyMuted: false
     };
+    
+    // Initialize global mute state
+    this.isGloballyMuted = false;
     this.errorCallbacks = new Set();
     this.stateChangeCallbacks = new Set();
     this.maxRetries = 3;
@@ -262,7 +268,8 @@ export class CelestialAudioEngine {
               timestamp: Date.now(),
               recoverable: false
             },
-            contextState: 'unknown'
+            contextState: 'unknown',
+            isGloballyMuted: false
           };
           
           return; // Skip the rest of initialization
@@ -665,6 +672,17 @@ export class CelestialAudioEngine {
         }
       }
 
+      // Check global mute state before starting any audio
+      if (this.isGloballyMuted) {
+        console.log('🔇 Audio is globally muted - starting in silent mode');
+        this.settings.isPlaying = true;
+        this.audioState.isPlaying = true;
+        this.updateContextState();
+        this.clearError();
+        console.log('🎵 Celestial symphony started (silently muted)');
+        return;
+      }
+
       // Initialize planets if not already done
       if (this.planetStates.size === 0) {
         console.log('🪐 Initializing planets for audio playback...');
@@ -702,6 +720,12 @@ export class CelestialAudioEngine {
    * Start planet loops using Tone.Transport or Web Audio API scheduling
    */
   private startPlanetLoops(): void {
+    // Check global mute state before starting any audio
+    if (this.isGloballyMuted) {
+      console.log('🔇 Skipping planet loops start - globally muted');
+      return;
+    }
+    
     // Start Transport if available and not already running
     if (Tone && Tone.Transport) {
       try {
@@ -768,6 +792,12 @@ export class CelestialAudioEngine {
   private schedulePlanet(planetId: string): void {
     try {
       if (!this.settings.isPlaying) return;
+      
+      // Check global mute state before scheduling any audio
+      if (this.isGloballyMuted) {
+        console.log(`🔇 Skipping audio scheduling for planet ${planetId} - globally muted`);
+        return;
+      }
       
       const synthData = this.synths.get(planetId);
       const state = this.planetStates.get(planetId);
@@ -1224,6 +1254,71 @@ export class CelestialAudioEngine {
     this.audioState.error = null;
     this.retryCount = 0;
     this.notifyStateChange();
+  }
+
+  /**
+   * Set global mute state
+   * When muted, ALL audio output is completely silenced
+   */
+  setGlobalMute(isMuted: boolean): void {
+    console.log('🔇 Setting global mute to:', isMuted);
+    this.isGloballyMuted = isMuted;
+    this.audioState.isGloballyMuted = isMuted;
+    
+    if (isMuted) {
+      // Immediately silence all audio
+      if (this.masterVolume && this.masterVolume.volume) {
+        this.masterVolume.volume.value = -Infinity;
+      }
+      
+      // Also mute all individual planet synths as a backup
+      this.synths.forEach((synth, planetId) => {
+        if (synth && synth.gainNode && synth.gainNode.gain) {
+          synth.gainNode.gain.value = 0;
+        }
+      });
+      
+      console.log('🔇 Audio globally muted');
+    } else {
+      // Restore volume to previous level
+      if (this.masterVolume && this.masterVolume.volume) {
+        this.masterVolume.volume.value = this.settings.volume;
+      }
+      
+      // Restore individual planet volumes
+      this.planetStates.forEach((state, planetId) => {
+        if (!state.isMuted) {
+          this.setPlanetVolume(planetId, state.volume);
+        }
+      });
+      
+      console.log('🔊 Audio globally unmuted');
+    }
+    
+    this.notifyStateChange();
+  }
+
+  /**
+   * Get current global mute state
+   */
+  getGlobalMute(): boolean {
+    return this.isGloballyMuted;
+  }
+
+  /**
+   * Check if audio should play (not globally muted and not individually muted)
+   */
+  shouldPlayAudio(planetId?: string): boolean {
+    if (this.isGloballyMuted) {
+      return false;
+    }
+    
+    if (planetId) {
+      const planetState = this.planetStates.get(planetId);
+      return planetState ? !planetState.isMuted : true;
+    }
+    
+    return true;
   }
 
   /**

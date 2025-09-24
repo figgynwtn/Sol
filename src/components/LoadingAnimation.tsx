@@ -12,6 +12,7 @@ interface LoadingAnimationProps {
   duration?: number;
   onAudioReady?: () => void;
   onProceedWithoutAudio?: () => void;
+  onSoundPreferenceChange?: (preference: 'enabled' | 'disabled') => void;
 }
 
 export default function LoadingAnimation({ 
@@ -19,6 +20,7 @@ export default function LoadingAnimation({
   onComplete,
   onAudioReady,
   onProceedWithoutAudio,
+  onSoundPreferenceChange,
   duration = 5000 
 }: LoadingAnimationProps) {
   const [progress, setProgress] = useState(0);
@@ -220,6 +222,8 @@ export default function LoadingAnimation({
               onClick={() => {
                 console.log('User chose to enable sound');
                 setSoundPreference('enabled');
+                // Notify parent of sound preference change
+                onSoundPreferenceChange?.('enabled');
                 // Start audio initialization in background
                 handleUserInteraction();
               }}
@@ -239,6 +243,8 @@ export default function LoadingAnimation({
               onClick={() => {
                 console.log('User chose to explore without sound');
                 setSoundPreference('disabled');
+                // Notify parent of sound preference change
+                onSoundPreferenceChange?.('disabled');
                 // Set a flag to disable audio when proceeding
                 // Don't call onProceedWithoutAudio immediately - wait for loading to complete
               }}

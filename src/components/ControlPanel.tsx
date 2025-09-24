@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Tooltip from './Tooltip';
+import SoundToggleButton from './SoundToggleButton';
 import { ControlPanelProps } from '@/types';
 
 export default function ControlPanel({
@@ -12,7 +13,9 @@ export default function ControlPanel({
   speedMultiplier,
   onSpeedChange,
   audioReady = false,
-  audioStatus = 'uninitialized'
+  audioStatus = 'uninitialized',
+  soundPreference = null,
+  onToggleSound
 }: ControlPanelProps) {
   return (
     <div 
@@ -83,6 +86,17 @@ export default function ControlPanel({
             </button>
           </Tooltip>
         </div>
+
+        {/* Sound Toggle Button */}
+        {onToggleSound && (
+          <div className="flex items-center justify-center">
+            <SoundToggleButton
+              soundPreference={soundPreference}
+              onToggleSound={onToggleSound}
+              audioReady={audioReady}
+            />
+          </div>
+        )}
 
         {/* Volume Control */}
         <div className="space-y-2 sm:space-y-3" role="group" aria-label="Volume controls">

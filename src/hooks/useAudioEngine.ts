@@ -13,6 +13,7 @@ interface UseAudioEngineReturn {
   handleTempoChange: (tempo: number) => void;
   handleSpeedChange: (speed: number) => void;
   handlePlanetMute: (planetId: string, isMuted: boolean) => void;
+  handleGlobalMute: (isMuted: boolean) => void;
 }
 
 export function useAudioEngine(): UseAudioEngineReturn {
@@ -161,6 +162,12 @@ export function useAudioEngine(): UseAudioEngineReturn {
     }
   }, [audioEngine]);
 
+  // Handle global mute/unmute
+  const handleGlobalMute = useCallback((isMuted: boolean): void => {
+    console.log('🎵 Setting global mute to:', isMuted);
+    audioEngine.setGlobalMute(isMuted);
+  }, [audioEngine]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -184,6 +191,7 @@ export function useAudioEngine(): UseAudioEngineReturn {
     handleVolumeChange,
     handleTempoChange,
     handleSpeedChange,
-    handlePlanetMute
+    handlePlanetMute,
+    handleGlobalMute
   };
 }

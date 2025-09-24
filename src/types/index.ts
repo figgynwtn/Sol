@@ -12,6 +12,8 @@ export interface AudioSettings {
 
 export type AudioStatus = 'uninitialized' | 'initializing' | 'ready' | 'playing' | 'paused' | 'error';
 
+export type SoundPreference = 'enabled' | 'disabled' | null;
+
 export interface PlanetPosition {
   x: number;
   y: number;
@@ -36,6 +38,8 @@ export interface ControlPanelProps {
   onSpeedChange: (speed: number) => void;
   audioReady?: boolean;
   audioStatus?: AudioStatus;
+  soundPreference?: SoundPreference;
+  onToggleSound?: () => void;
 }
 
 export interface PlanetInfoPanelProps {

@@ -14,7 +14,7 @@ import { useAudioEngine } from '@/hooks/useAudioEngine';
 import { useGestures, useIsMobile, useOrientation } from '@/hooks/useGestures';
 import { PLANETS } from '@/lib/planets-data';
 import { cn } from '@/lib/utils';
-import type { AudioStatus } from '@/types';
+import type { AudioStatus, SoundPreference } from '@/types';
 
 export default function HomePage() {
   const [selectedPlanet, setSelectedPlanet] = useState<Planet | null>(null);
@@ -25,6 +25,7 @@ export default function HomePage() {
   const [showMobileControls, setShowMobileControls] = useState(false);
   const [showPlanetInfo, setShowPlanetInfo] = useState(false);
   const [visualizationScale, setVisualizationScale] = useState(1);
+  const [soundPreference, setSoundPreference] = useState<SoundPreference>(null);
   
   const isMobile = useIsMobile();
   const orientation = useOrientation();
@@ -37,7 +38,8 @@ export default function HomePage() {
     handleVolumeChange,
     handleTempoChange,
     handleSpeedChange,
-    handlePlanetMute
+    handlePlanetMute,
+    handleGlobalMute
   } = useAudioEngine();
 
   // Handle audio ready callback
@@ -53,6 +55,13 @@ export default function HomePage() {
     }
   }, [isInitialized]);
 
+  // Initialize global mute state on component mount
+  useEffect(() => {
+    // Start with global mute enabled (no sound) until user makes a preference
+    console.log('🎵 Initializing with global mute enabled');
+    handleGlobalMute(true);
+  }, [handleGlobalMute]);
+
   // Handle loading completion
   const handleLoadingComplete = () => {
     console.log('📊 Loading animation completed - hiding loading screen');
@@ -61,6 +70,43 @@ export default function HomePage() {
 
   const handleProceedWithoutAudio = () => {
     setShowLoading(false);
+  };
+
+  // Handle sound preference change from loading animation
+  const handleSoundPreferenceChange = (preference: 'enabled' | 'disabled') => {
+    console.log('🎵 Sound preference changed to:', preference);
+    setSoundPreference(preference);
+    
+    // Set global mute state immediately
+    const isMuted = preference === 'disabled';
+    handleGlobalMute(isMuted);
+    
+    console.log('🎵 Global mute set to:', isMuted);
+  };
+
+  // Handle sound toggle from control panel
+  const handleToggleSound = () => {
+    const newPreference = soundPreference === 'enabled' ? 'disabled' : 'enabled';
+    console.log('🎵 Toggling sound from', soundPreference, 'to', newPreference);
+    setSoundPreference(newPreference);
+    
+    // Set global mute state immediately
+    const isMuted = newPreference === 'disabled';
+    handleGlobalMute(isMuted);
+    
+    // If enabling sound, we might need to initialize audio
+    if (newPreference === 'enabled' && !audioReady) {
+      // Audio initialization will be handled by the existing audio engine logic
+      console.log('🎵 Sound enabled - audio will be initialized when ready');
+    } else if (newPreference === 'disabled') {
+      // If disabling sound, stop any playing audio
+      if (audioSettings.isPlaying) {
+        handleTogglePlay();
+      }
+      console.log('🎵 Sound disabled - stopping any playing audio');
+    }
+    
+    console.log('🎵 Global mute set to:', isMuted);
   };
 
   // No fallback timeout needed - user must click to proceed
@@ -135,6 +181,7 @@ export default function HomePage() {
           onComplete={handleLoadingComplete} 
           onAudioReady={handleAudioReady}
           onProceedWithoutAudio={handleProceedWithoutAudio}
+          onSoundPreferenceChange={handleSoundPreferenceChange}
         />
       )}
       
@@ -255,6 +302,8 @@ export default function HomePage() {
                         onSpeedChange={handleSpeedChange}
                         audioReady={audioReady}
                         audioStatus={audioStatus}
+                        soundPreference={soundPreference}
+                        onToggleSound={handleToggleSound}
                       />
                     </div>
                   </div>
