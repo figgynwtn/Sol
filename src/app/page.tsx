@@ -196,7 +196,7 @@ export default function HomePage() {
 
             {/* Header - Proper document flow */}
             <header className="relative z-10 p-4 sm:p-6">
-              <div className="glass-panel p-4 sm:p-6 max-w-6xl mx-auto">
+              <div className="glass-panel p-4 sm:p-6 w-full sm:max-w-6xl sm:mx-auto">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="animate-float">
                     <h1 className="cosmic-title text-2xl sm:text-3xl">
@@ -227,8 +227,6 @@ export default function HomePage() {
               </div>
             </header>
 
-
-
             {/* Main Content - Responsive layout */}
             <main className={cn(
               "relative flex-1 overflow-hidden",
@@ -236,31 +234,29 @@ export default function HomePage() {
             )}>
               {/* Desktop Layout - Side by side */}
               {!isMobile && (
-                <div className="flex flex-row gap-6 h-full max-h-[calc(100vh-200px)]">
+                <div className="flex flex-row gap-6 h-full">
                   {/* Mission Control - Left side (40%) */}
-                  <div className="w-[40%] flex-shrink-0 relative z-10 p-4 sm:p-6">
-                    <div className="max-w-6xl mx-auto">
+                  <div className="w-[40%] flex-shrink-0 relative z-10 h-full glass-panel p-4 sm:p-6 overflow-y-auto">
                       <ControlPanel
-                      audioSettings={audioSettings}
-                      onTogglePlay={handleTogglePlay}
-                      onVolumeChange={handleVolumeChange}
-                      onTempoChange={handleTempoChange}
-                      speedMultiplier={speedMultiplier}
-                      onSpeedChange={handleSpeedChange}
-                      audioReady={audioReady}
-                      audioStatus={audioStatus}
-                      soundPreference={soundPreference}
-                      onToggleSound={handleToggleSound}
-                    />
-                    </div>
+                        audioSettings={audioSettings}
+                        onTogglePlay={handleTogglePlay}
+                        onVolumeChange={handleVolumeChange}
+                        onTempoChange={handleTempoChange}
+                        speedMultiplier={speedMultiplier}
+                        onSpeedChange={handleSpeedChange}
+                        audioReady={audioReady}
+                        audioStatus={audioStatus}
+                        soundPreference={soundPreference}
+                        onToggleSound={handleToggleSound}
+                      />
                   </div>
                   
-                  {/* Planet Map - Right side (70%) */}
-                  <div className="flex-1 flex items-center justify-center relative z-10">
-                    <div className="w-full h-full flex items-center justify-center">
+                  {/* Planet Map - Right side (60%) */}
+                  <div className="flex-1 relative z-10 h-full">
+                    <div className="w-full h-full">
                       <SolarSystemVisualization
                         width={orientation === 'portrait' ? 700 : 900}
-                        height={orientation === 'portrait' ? 500 : 600}
+                        height={window.innerHeight - 50}
                         onPlanetClick={handlePlanetClick}
                         selectedPlanet={selectedPlanet}
                         speedMultiplier={speedMultiplier}
@@ -283,12 +279,11 @@ export default function HomePage() {
                 </div>
               )}
               
-              {/* Mobile Layout - Column */}
+              {/* Mobile Layout - Mission Control and Planet Map */}
               {isMobile && (
-                <div className="flex flex-col gap-6 h-full">
-                  {/* Mission Control - Top */}
-                  <div className="w-full">
-                    <div className="glass-panel p-4 sm:p-6 w-full">
+                <div className="flex flex-col gap-4 md:gap-6">
+                  {/* Mission Control - Top section */}
+                  <div className="relative z-10 glass-panel p-4 sm:p-6 w-full">
                       <ControlPanel
                         audioSettings={audioSettings}
                         onTogglePlay={handleTogglePlay}
@@ -301,11 +296,10 @@ export default function HomePage() {
                         soundPreference={soundPreference}
                         onToggleSound={handleToggleSound}
                       />
-                    </div>
                   </div>
                   
-                  {/* Planet Map - Bottom */}
-                  <div className="flex-1 flex items-center justify-center relative z-10 min-h-[400px]">
+                  {/* Planet Map - Bottom section */}
+                  <div className="flex items-center justify-center relative z-10 min-h-[400px]">
                     <div className="w-full h-full flex items-center justify-center">
                       <SolarSystemVisualization
                         width={Math.min(window.innerWidth - 32, 600)}
@@ -332,8 +326,8 @@ export default function HomePage() {
             )}
 
             {/* Footer */}
-            <footer className="relative p-4 text-center text-gray-400 text-xs z-5 mt-auto">
-              <p>
+            <footer className="relative p-4 text-center text-gray-400 text-xs z-5 mt-auto w-full">
+              <p className="w-full sm:max-w-6xl sm:mx-auto">
                 Built with Next.js, D3.js, and Tone.js • 
                 Orbital data based on NASA planetary fact sheets • 
                 Click planets to explore, adjust controls to customize your experience
