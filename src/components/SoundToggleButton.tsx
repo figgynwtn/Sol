@@ -45,9 +45,9 @@ export default function SoundToggleButton({
           }
         }}
         className={`
-          cosmic-button text-sm sm:text-base w-full py-2 sm:py-3
+          cosmic-button text-sm sm:text-base w-full
           flex items-center justify-center gap-2 sm:gap-3
-          min-h-[40px] sm:min-h-[44px] touch-manipulation
+          min-h-[44px] touch-manipulation
           ${!audioReady ? 'opacity-75 hover:opacity-100' : ''}
         `}
         aria-label={buttonText}

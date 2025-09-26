@@ -33,9 +33,9 @@ export default function ControlPanel({
         <h2 className="cosmic-subtitle text-sm sm:text-base md:text-lg">Mission Control</h2>
       </div>
       
-      <div className="space-y-4 sm:space-y-5 md:space-y-6 overflow-visible">
+      <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 overflow-visible">
         {/* Play/Pause Button */}
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center w-full">
           <Tooltip 
             content={!audioReady 
               ? "Click to enable audio and experience the celestial symphony"
@@ -54,8 +54,7 @@ export default function ControlPanel({
                 }
               }}
               className={`
-                cosmic-button text-sm sm:text-base w-full py-3 sm:py-4
-                ${audioSettings.isPlaying ? 'cosmic-button-danger' : ''}
+                cosmic-button-wide text-sm sm:text-base w-full
                 ${!audioReady ? 'opacity-75 hover:opacity-100' : ''}
                 flex items-center justify-center gap-2 sm:gap-3
                 min-h-[44px] sm:min-h-[48px] touch-manipulation
@@ -89,18 +88,20 @@ export default function ControlPanel({
 
         {/* Sound Toggle Button */}
         {onToggleSound && (
-          <div className="flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
-            <SoundToggleButton
-              soundPreference={soundPreference}
-              onToggleSound={onToggleSound}
-              audioReady={audioReady}
-            />
+          <div className="w-full py-2" role="group" aria-label="Sound toggle controls">
+            <div className="flex items-center justify-center w-full">
+              <SoundToggleButton
+                soundPreference={soundPreference}
+                onToggleSound={onToggleSound}
+                audioReady={audioReady}
+              />
+            </div>
           </div>
         )}
 
         {/* Volume Control */}
-        <div className="space-y-3 sm:space-y-3 w-full" role="group" aria-label="Volume controls">
-          <div className="flex items-center justify-between mb-2 w-full">
+        <div className="w-full py-2 overflow-visible" role="group" aria-label="Volume controls">
+          <div className="flex items-center justify-between w-full min-h-[28px] sm:min-h-[32px] mb-3 sm:mb-3">
             <Tooltip 
               content="Adjust master volume for all audio"
               position="bottom"
@@ -154,8 +155,8 @@ export default function ControlPanel({
         </div>
 
         {/* Tempo Control */}
-        <div className="mt-4 sm:mt-5 md:mt-6 space-y-3 sm:space-y-3 w-full overflow-visible" role="group" aria-label="Tempo controls">
-          <div className="flex items-center justify-between mb-2 w-full">
+        <div className="w-full py-2 overflow-visible" role="group" aria-label="Tempo controls">
+          <div className="flex items-center justify-between w-full mb-3 sm:mb-3">
             <Tooltip 
               content={!audioReady ? "Audio not initialized" : "Control the tempo (beats per minute) of the planetary music"}
               position="top"
@@ -209,13 +210,16 @@ export default function ControlPanel({
         </div>
 
         {/* Speed Multiplier */}
-        <div className="mt-4 sm:mt-5 md:mt-6 space-y-3 sm:space-y-3" role="group" aria-label="Time speed multiplier controls">
-          <div className="flex items-center justify-between">
+        <div className="w-full py-2 overflow-visible" role="group" aria-label="Time speed multiplier controls">
+          <div className="flex items-center justify-between w-full mb-3 sm:mb-3">
             <Tooltip 
               content="Adjust the time speed multiplier to see planets orbit faster or slower"
               position="top"
             >
-              <label className="text-xs sm:text-sm font-medium text-purple-300 flex items-center gap-1 sm:gap-2 cursor-help touch-manipulation">
+              <label 
+                htmlFor="speed-buttons"
+                className="text-xs sm:text-sm font-medium text-purple-300 flex items-center gap-1 sm:gap-2 cursor-help touch-manipulation"
+              >
                 <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -231,7 +235,8 @@ export default function ControlPanel({
               {speedMultiplier}x
             </span>
           </div>
-          <div className="grid grid-cols-5 gap-1 sm:gap-2" role="radiogroup" aria-label="Time speed options">
+          <div className="w-full">
+            <div className="grid grid-cols-5 gap-0.5" role="radiogroup" aria-label="Time speed options" id="speed-buttons">
             {[1, 10, 100, 1000, 10000].map((speed) => (
               <Tooltip 
                 key={speed}
@@ -247,14 +252,14 @@ export default function ControlPanel({
                     }
                   }}
                   className={`
-                    cosmic-button cosmic-button-speed
-                    rounded text-xs font-medium transition-all duration-200 transform hover:scale-105 touch-manipulation
-                    focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900
-                    w-full overflow-hidden whitespace-nowrap text-xs
+                    cosmic-button text-xs w-full py-2 px-2
                     ${speedMultiplier === speed
                       ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
                       : 'glass-panel hover:glass-panel-hover text-purple-300'
                     }
+                    flex items-center justify-center gap-1
+                    min-h-[32px] touch-manipulation
+                    !px-2 !py-2 !min-h-[32px] !min-w-[28px]
                   `}
                   aria-label={`Set time speed to ${speed}x${speed === 1 ? ' (real-time)' : speed === 10000 ? ' (maximum speed)' : ''}`}
                   aria-pressed={speedMultiplier === speed}
@@ -266,6 +271,7 @@ export default function ControlPanel({
                 </button>
               </Tooltip>
             ))}
+            </div>
           </div>
         </div>
 

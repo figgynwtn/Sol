@@ -184,13 +184,27 @@
   
   /* Mobile-first button improvements */
   .cosmic-button {
-    @apply px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900;
+    @apply px-6 py-2 sm:px-8 sm:py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900;
     min-height: 44px;
-    min-width: 44px;
+    width: 100%;
     touch-action: manipulation;
+    box-sizing: border-box;
+  }
+  
+  /* Wider button specifically for Start/Pause button */
+  .cosmic-button-wide {
+    @apply px-12 py-2 sm:px-16 sm:py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900;
+    min-height: 44px;
+    width: 100%;
+    touch-action: manipulation;
+    box-sizing: border-box;
   }
   
   .cosmic-button:active {
+    @apply scale-95;
+  }
+  
+  .cosmic-button-wide:active {
     @apply scale-95;
   }
   
@@ -198,6 +212,11 @@
   .cosmic-button:disabled {
     @apply opacity-50 cursor-not-allowed transform-none;
   }
+  
+  .cosmic-button-wide:disabled {
+    @apply opacity-50 cursor-not-allowed transform-none;
+  }
+  
   
   /* Neon glow effects */
   .neon-glow {
@@ -269,23 +288,7 @@
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   }
   
-  /* Custom buttons */
-  .cosmic-button {
-    @apply relative px-8 py-4 font-semibold text-lg transition-all duration-300 transform hover:scale-105;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(59, 130, 246, 0.8) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50px;
-    box-shadow: 
-      0 8px 32px rgba(139, 92, 246, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  }
-  
-  .cosmic-button:hover {
-    background: linear-gradient(135deg, rgba(139, 92, 246, 1) 0%, rgba(59, 130, 246, 1) 100%);
-    box-shadow: 
-      0 12px 48px rgba(139, 92, 246, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  }
+  /* Custom buttons - using mobile-first cosmic-button definition above */
   
   .cosmic-button-danger {
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.8) 100%);
@@ -309,6 +312,19 @@
   
   .cosmic-card:hover {
     @apply glass-panel-hover transform hover:-translate-y-1;
+  }
+  
+  /* Time speed buttons for constrained containers */
+  .grid:has([role="radiogroup"][aria-label*="Time speed options"]) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  
+  [role="radiogroup"][aria-label*="Time speed options"] button {
+    font-size: 0.7rem !important;
+    padding: 4px 6px !important;
+    min-height: 28px !important;
+    min-width: 24px !important;
+    line-height: 1.2 !important;
   }
   
   /* Loading animations */
