@@ -31,8 +31,15 @@ export function generateOrbitPath(
           A ${radius} ${radius} 0 1 1 ${centerX + radius} ${centerY}`;
 }
 
-export function calculatePlanetRadius(planet: Planet, baseSize: number = 12): number {
-  return Math.max(4, baseSize * Math.log(planet.radius + 1));
+export function calculatePlanetRadius(planet: Planet, baseSize: number = 12, containerSize?: number): number {
+  // If container size is provided, calculate responsive base size - increased multiplier
+  const responsiveBaseSize = containerSize ? Math.max(containerSize * 0.015, 6) : baseSize;
+  
+  // Use a more aggressive scaling factor to better show size differences
+  // Jupiter (radius 5.0) should be much larger than Neptune (radius 1.9)
+  const sizeMultiplier = Math.pow(planet.radius, 0.7); // Use power function for better size differentiation
+  
+  return Math.max(6, responsiveBaseSize * sizeMultiplier);
 }
 
 export function calculateOrbitalVelocity(planet: Planet): number {

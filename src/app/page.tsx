@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import SolarSystemVisualization from '@/components/SolarSystemVisualization';
 import ControlPanel from '@/components/ControlPanel';
 import PlanetInfoPanel from '@/components/PlanetInfoPanel';
@@ -23,6 +23,10 @@ export default function HomePage() {
   const [showPlanetInfo, setShowPlanetInfo] = useState(false);
   const [visualizationScale, setVisualizationScale] = useState(1);
   const [soundPreference, setSoundPreference] = useState<SoundPreference>(null);
+  const leftPanelRef = useRef<HTMLDivElement | null>(null);
+  const rightPanelRef = useRef<HTMLDivElement | null>(null);
+  const [leftPanelHeight, setLeftPanelHeight] = useState<number | undefined>(undefined);
+  const [rightPanelWidth, setRightPanelWidth] = useState<number | undefined>(undefined);
   
   const isMobile = useIsMobile();
   const orientation = useOrientation();
@@ -164,6 +168,83 @@ export default function HomePage() {
     onPinchChange: handlePinchChange
   }, { element: gestureElement });
 
+  // Observe Mission Control (left panel) height and sync planet map height to match (desktop only)
+  useLayoutEffect(() => {
+    const leftEl = leftPanelRef.current;
+    if (!leftEl) {
+      console.log('🔍 DEBUG: Left panel ref not found');
+      return;
+    }
+    
+    const measureHeight = () => {
+      const rect = leftEl.getBoundingClientRect();
+      const styles = window.getComputedStyle(leftEl);
+      
+      // Calculate total height including borders
+      const borderTop = parseFloat(styles.borderTopWidth) || 0;
+      const borderBottom = parseFloat(styles.borderBottomWidth) || 0;
+      const paddingTop = parseFloat(styles.paddingTop) || 0;
+      const paddingBottom = parseFloat(styles.paddingBottom) || 0;
+      
+      // Use the full visible height
+      const h = Math.round(rect.height);
+      
+      console.log('🔍 DEBUG: Measuring left panel:', {
+        rectHeight: rect.height,
+        clientHeight: leftEl.clientHeight,
+        offsetHeight: leftEl.offsetHeight,
+        scrollHeight: leftEl.scrollHeight,
+        borderTop,
+        borderBottom,
+        paddingTop,
+        paddingBottom,
+        finalHeight: h
+      });
+      
+      if (h > 0) {
+        setLeftPanelHeight(h);
+      }
+    };
+    
+    // Initial measurement after a short delay to ensure DOM is ready
+    setTimeout(measureHeight, 100);
+    
+    // Set up observer
+    const ro = new ResizeObserver(() => {
+      measureHeight();
+    });
+    
+    ro.observe(leftEl);
+    
+    // Also measure on window resize as a fallback
+    window.addEventListener('resize', measureHeight);
+    
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measureHeight);
+    };
+  }, [isMobile]);
+
+  // Debug: Log when leftPanelHeight changes
+  useEffect(() => {
+    console.log('🔍 DEBUG: Left panel height changed:', leftPanelHeight);
+    console.log('🔍 DEBUG: Right panel height being applied:', !isMobile ? leftPanelHeight : 'mobile');
+  }, [leftPanelHeight, isMobile]);
+  useLayoutEffect(() => {
+    const rightEl = rightPanelRef.current;
+    if (!rightEl) return;
+    const ro = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const w = Math.round(entry.contentRect.width);
+        setRightPanelWidth(w > 0 ? w : undefined);
+      }
+    });
+    ro.observe(rightEl);
+    // Initialize immediately
+    setRightPanelWidth(Math.round(rightEl.getBoundingClientRect().width) || undefined);
+    return () => ro.disconnect();
+  }, [isMobile]);
+
   return (
     <>
       {/* Show loading animation on page load */}
@@ -234,9 +315,10 @@ export default function HomePage() {
             )}>
               {/* Desktop Layout - Side by side */}
               {!isMobile && (
-                <div className="flex flex-row gap-6 h-full">
+                <>
+                  <div className="flex flex-row gap-6 h-full items-stretch">
                   {/* Mission Control - Left side (40%) */}
-                  <div className="w-[40%] flex-shrink-0 relative z-10 h-full glass-panel p-4 sm:p-6 overflow-y-auto">
+                  <div ref={leftPanelRef} className="w-[40%] flex-shrink-0 relative z-10 h-full glass-panel p-4 sm:p-6 overflow-y-auto">
                       <ControlPanel
                         audioSettings={audioSettings}
                         onTogglePlay={handleTogglePlay}
@@ -252,11 +334,11 @@ export default function HomePage() {
                   </div>
                   
                   {/* Planet Map - Right side (60%) */}
-                  <div className="flex-1 relative z-10 h-full">
-                    <div className="w-full h-full">
+                  <div ref={rightPanelRef} className="flex-1 relative z-10 rounded-2xl" style={{ height: !isMobile ? leftPanelHeight : undefined }}>
+                    <div className="w-full h-full" style={{ height: !isMobile ? leftPanelHeight : undefined }}>
                       <SolarSystemVisualization
-                        width={orientation === 'portrait' ? 700 : 900}
-                        height={window.innerHeight - 50}
+                        width='100%'
+                        height='100%'
                         onPlanetClick={handlePlanetClick}
                         selectedPlanet={selectedPlanet}
                         speedMultiplier={speedMultiplier}
@@ -266,17 +348,16 @@ export default function HomePage() {
                   </div>
                   
                   {/* Desktop Planet Info Panel - Overlay on planet map */}
-                  {selectedPlanet && (
-                    <div className="absolute top-6 right-6 w-80 z-30">
-                      <div className="glass-panel cosmic-card p-4 h-full overflow-hidden">
-                        <PlanetInfoPanel
-                          planet={selectedPlanet}
-                          onClose={handleClosePlanetInfo}
-                        />
-                      </div>
+                  {selectedPlanet && !isMobile && (
+                    <div className="absolute inset-0 z-20 pointer-events-none">
+                      <PlanetInfoPanel
+                        planet={selectedPlanet}
+                        onClose={() => setSelectedPlanet(null)}
+                      />
                     </div>
                   )}
                 </div>
+              </> 
               )}
               
               {/* Mobile Layout - Mission Control and Planet Map */}
@@ -302,8 +383,8 @@ export default function HomePage() {
                   <div className="flex items-center justify-center relative z-10 min-h-[400px]">
                     <div className="w-full h-full flex items-center justify-center">
                       <SolarSystemVisualization
-                        width={Math.min(window.innerWidth - 32, 600)}
-                        height={Math.min(window.innerHeight - 400, 450)}
+                        width='100%'
+                        height='100%'
                         onPlanetClick={handlePlanetClick}
                         selectedPlanet={selectedPlanet}
                         speedMultiplier={speedMultiplier}
